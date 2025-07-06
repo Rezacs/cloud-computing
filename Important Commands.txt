@@ -1,0 +1,24 @@
+screen -r hadoopjob
+
+nano /opt/hadoop/etc/hadoop/yarn-site.xml
+
+
+
+stop-yarn.sh
+stop-dfs.sh
+start-dfs.sh
+start-yarn.sh
+
+
+
+
+cd ~/invertedindex
+
+export HADOOP_CLASSPATH=$(hadoop classpath)
+
+javac -classpath $HADOOP_CLASSPATH -d . InvertedIndexMapper.java InvertedIndexCombiner.java InvertedIndexReducer.java InvertedIndexDriver.java
+
+jar -cvf invertedindex.jar *
+hadoop fs -rm -r /user/hadoop/output
+hadoop jar invertedindex.jar InvertedIndexDriver /user/hadoop/input /user/hadoop/output
+hadoop fs -cat /user/hadoop/output/part-r-00000 | head -30
